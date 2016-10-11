@@ -64,7 +64,7 @@ class MnSnitchService extends BaseApplicationComponent
 	public function expire($now = null)
 	{
 		$now = $this->_now($now);
-		$timeOut = craft()->config->get('serverPollInterval', 'mnnocollide') * 10;
+		$timeOut = craft()->config->get('serverPollInterval', 'mnsnitch') * 10;
 		$old = clone $now;
 		$old->sub(new DateInterval('PT'.$timeOut.'S'));
 		$x = MnSnitchRecord::model()->deleteAll('whenEntered<:when', array(':when'=>$old));
