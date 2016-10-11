@@ -19,6 +19,7 @@ class MnSnitchService extends BaseApplicationComponent
 	 */
 	public function registerCollision($elementId, $userId = null, $now = null)
 	{
+		$transaction = craft()->db->getCurrentTransaction() === null ? craft()->db->beginTransaction() : null;
 		$now = $this->_now($now);
 		$userId = $this->_userId($userId);
 		// look for existing record to update
@@ -34,7 +35,12 @@ class MnSnitchService extends BaseApplicationComponent
 			$record->elementId = $elementId;
 		}
 		$record->whenEntered = $now;
-		$result = $record->save();
+		$result = $record->save(false);
+
+		if ($transaction !== null)
+		{
+			$transaction->commit();
+		}
 	}
 
 	public function getCollisions($elementId, $userId = null, $now = null)
