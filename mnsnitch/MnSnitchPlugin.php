@@ -20,16 +20,19 @@ class MnSnitchPlugin extends BasePlugin
 	 */
 	public function init()
 	{
-		craft()->templates->includeJsResource('mnsnitch/js/mnsnitch.js');
-		craft()->templates->includeCssResource('mnsnitch/css/mnsnitch.css');
-		// on save entry, current user exit the entry
-		craft()->on('entries.onSaveEntry', function (Event $event) {
-			// Get saved entry
-			$entry = $event->params['entry'];
-			if ($entry) {
-				craft()->mnSnitch->removeCollision($entry->id);
-			}
-		});
+		if (craft()->request->isCpRequest())
+		{
+			craft()->templates->includeJsResource('mnsnitch/js/mnsnitch.js');
+			craft()->templates->includeCssResource('mnsnitch/css/mnsnitch.css');
+			// on save entry, current user exit the entry
+			craft()->on('entries.onSaveEntry', function (Event $event) {
+				// Get saved entry
+				$entry = $event->params['entry'];
+				if ($entry) {
+					craft()->mnSnitch->removeCollision($entry->id);
+				}
+			});
+		}
 	}
 
 	/**
@@ -69,7 +72,7 @@ class MnSnitchPlugin extends BasePlugin
 	 */
 	public function getVersion()
 	{
-		return '1.0.0';
+		return '1.0.1';
 	}
 
 	/**

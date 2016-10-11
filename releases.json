@@ -6,5 +6,12 @@
     "notes": [
       "[Added] Initial release"
     ]
+  }, {
+    "version": "1.0.1",
+    "downloadUrl": "https://github.com/marionnewlevant/craft-snitch/archive/v1.0.1.zip",
+    "date": "2016-10-11T20:37:12.921Z",
+    "notes": [
+      "[Fixed] Only load snitch js and css for control panel"
+    ]
   }
 ]
