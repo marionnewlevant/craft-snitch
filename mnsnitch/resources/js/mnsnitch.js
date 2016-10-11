@@ -69,7 +69,7 @@ $('body').on('dblclick', 'div.element.small', function() {
 $('body').on('click', '.mnsnitch span', function() {
   var $div = $(this).closest('div');
   // remove it from the dom
-  $div.remove();
+  $div.slideUp('fast', function(){ $(this).remove() });
 });
 
 
