@@ -67,7 +67,8 @@ class MnSnitchService extends BaseApplicationComponent
 		$timeOut = craft()->config->get('serverPollInterval', 'mnnocollide') * 10;
 		$old = clone $now;
 		$old->sub(new DateInterval('PT'.$timeOut.'S'));
-		$x = MnSnitchRecord::model()->deleteAll('whenEntered<:when', array(':when'=>$old));
+		$oldDateString = DateTimeHelper::formatTimeForDb($old);
+		$x = MnSnitchRecord::model()->deleteAll('whenEntered<:when', array(':when'=>$oldDateString));
 	}
 
 	public function userData(array $collisionModels, $userId = null)
@@ -109,6 +110,6 @@ class MnSnitchService extends BaseApplicationComponent
 
 	private function _now($now)
 	{
-		return ($now ? $now : new DateTime());
+		return ($now ? $now : DateTimeHelper::currentUTCDateTime());
 	}
 }
