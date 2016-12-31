@@ -19,6 +19,7 @@ class MnSnitchService extends BaseApplicationComponent
 	 */
 	public function registerCollision($elementId, $userId = null, $now = null)
 	{
+		$transaction = craft()->db->getCurrentTransaction() === null ? craft()->db->beginTransaction() : null;
 		$now = $this->_now($now);
 		$userId = $this->_userId($userId);
 		// look for existing record to update
@@ -34,7 +35,12 @@ class MnSnitchService extends BaseApplicationComponent
 			$record->elementId = $elementId;
 		}
 		$record->whenEntered = $now;
-		$result = $record->save();
+		$result = $record->save(false);
+
+		if ($transaction !== null)
+		{
+			$transaction->commit();
+		}
 	}
 
 	public function getCollisions($elementId, $userId = null, $now = null)
@@ -64,7 +70,7 @@ class MnSnitchService extends BaseApplicationComponent
 	public function expire($now = null)
 	{
 		$now = $this->_now($now);
-		$timeOut = craft()->config->get('serverPollInterval', 'mnnocollide') * 10;
+		$timeOut = craft()->config->get('serverPollInterval', 'mnsnitch') * 10;
 		$old = clone $now;
 		$old->sub(new DateInterval('PT'.$timeOut.'S'));
 		$oldDateString = DateTimeHelper::formatTimeForDb($old);

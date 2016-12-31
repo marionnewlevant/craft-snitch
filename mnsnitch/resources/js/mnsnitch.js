@@ -16,7 +16,7 @@ var warn = function(selector, collisions, message) {
   //   otherwise add to old warnings, value = true
   //   and add to container
       oldWarnings[email] = true;
-      $(selector).append('<div>'+msg[0]+'<a href="mailto:'+email+'">'+collisions[i].name+'</a>'+msg[1]+' <span>X</span></div>');
+      $(selector).append('<div>'+msg[0]+'<a href="mailto:'+email+'">'+collisions[i].name+'</a>'+msg[1]+' <span>&times;</span></div>');
     }
   }
   // update current warnings

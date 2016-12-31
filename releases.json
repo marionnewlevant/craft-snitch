@@ -13,5 +13,13 @@
     "notes": [
       "[Fixed] Only load snitch js and css for control panel"
     ]
+  }, {
+    "version": "1.0.2",
+    "downloadUrl": "https://github.com/marionnewlevant/craft-snitch/archive/v1.0.2.zip",
+    "date": "2016-12-31T20:37:12.921Z",
+    "notes": [
+      "[Fixed] Use db transactions",
+      "[Fixed] Expire collisions properly"
+    ]
   }
 ]
