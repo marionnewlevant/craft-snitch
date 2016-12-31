@@ -6,8 +6,9 @@ body.rtl .mnsnitch {
 }
 .mnsnitch>div {
   display: block;
-  padding: 0.25em 0.5em;
-  font-size: 1.5em;
+  padding: 0.5em 0.75em 0.65em 0.75em;
+  font-size: 1em;
+  line-height: 1em;
   background-color: #bf5035;
   background-image: linear-gradient(#bf5035, #b34b3b);
   color: white;
@@ -16,7 +17,14 @@ body.rtl .mnsnitch {
 .mnsnitch span {
   cursor: pointer;
   display: inline-block;
-  padding: 0 .5em;
+  padding: 13px 0 0 0;
+  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIxNHB4IiBoZWlnaHQ9IjE0cHgiIHZpZXdCb3g9IjAgMCAxNCAxNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4gICAgPGcgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSI+ICAgICAgICA8ZyBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMiI+ICAgICAgICAgICAgPHBhdGggZD0iTTIuNSwyLjUgTDExLjY5MjM4ODIsMTEuNjkyMzg4MiI+PC9wYXRoPiAgICAgICAgICAgIDxwYXRoIGQ9Ik0yLjUsMi41IEwxMS42OTIzODgyLDExLjY5MjM4ODIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDcuMDk2MTk0LCA3LjA5NjE5NCkgc2NhbGUoLTEsIDEpIHRyYW5zbGF0ZSgtNy4wOTYxOTQsIC03LjA5NjE5NCkgIj48L3BhdGg+ICAgICAgICA8L2c+ICAgIDwvZz48L3N2Zz4=);
+  width: 13px;
+  height: 0;
+  overflow: hidden;
+  position: relative;
+  top: 1px;
+  margin-left: 5px;
 }
 .mnsnitch a {
   color: white;

@@ -16,7 +16,7 @@ var warn = function(selector, collisions, message) {
   //   otherwise add to old warnings, value = true
   //   and add to container
       oldWarnings[email] = true;
-      $(selector).append('<div>'+msg[0]+'<a href="mailto:'+email+'">'+collisions[i].name+'</a>'+msg[1]+' <span>X</span></div>');
+      $(selector).append('<div>'+msg[0]+'<a href="mailto:'+email+'">'+collisions[i].name+'</a>'+msg[1]+' <span>X</span></div>').hide().slideDown('fast');
     }
   }
   // update current warnings
@@ -69,7 +69,7 @@ $('body').on('dblclick', 'div.element.small', function() {
 $('body').on('click', '.mnsnitch span', function() {
   var $div = $(this).closest('div');
   // remove it from the dom
-  $div.remove();
+  $div.slideUp('fast', function(){ $(this).remove() });
 });
 
 
