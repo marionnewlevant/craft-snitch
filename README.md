@@ -33,7 +33,7 @@ The default configuration can be overridden with a config file in `craft/config/
 
 - `serverPollInterval`: interval (in seconds) for polling server to look for newly arrived conflicts. Default value: `2`
 - `message`: text for the warning banner. The text `{user}` will be replace with a mailto link to the conflicting user. Default value: `May also be edited by: {user}.`
-- `inputIdSelector`: the css selector for identifying the hidden inputs which indicate an element edit window or modal elment edit window.
+- `inputIdSelector`: the css selector for identifying the hidden inputs which indicate an element edit window or modal element edit window.
 
 The visual look of the warning banners can be modifed with the `cpcss` plugin.
 
