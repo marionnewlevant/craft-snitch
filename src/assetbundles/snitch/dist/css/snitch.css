@@ -1,0 +1,62 @@
+/*
+This file is injected on every backend page. It defines the look of the snitch warnings.
+Any changes can probably be made with the cpcss plugin.
+The html looks like this (2 warnings, one of them hidden):
+(snitch--main for entire page warnings, snitch--modal for modal window warnings)
+<div class="snitch snitch--main">
+  <div data-email="othereditor@sample.com">
+    <div>
+      warning message start
+      <a href="mailto:othereditor@sample.com">other</a>
+      warning message end
+      <span>&times;</span>
+    </div>
+  </div>
+  <div class="snitch--hidden" data-email="someone@sample.com">
+    <div>
+      warning message start
+      <a href="mailto:someone@sample.com">other</a>
+      warning message end
+      <span>&times;</span>
+    </div>
+  </div>
+</div>
+ */
+body.ltr .snitch {
+  text-align: right;
+}
+body.rtl .snitch {
+  text-align: left;
+}
+.snitch>div>div {
+  padding: 0.5em 0.75em 0.65em 0.75em;
+}
+.snitch>div {
+  font-size: 1em;
+  line-height: 1em;
+  background-color: #bf5035;
+  background-image: linear-gradient(#bf5035, #b34b3b);
+  color: white;
+  /* we are going to close them by animating max-height */
+  max-height: 3em;
+  transition: max-height .5s;
+  overflow: hidden;
+}
+
+.snitch > div.snitch--hidden {
+  max-height: 0;
+}
+
+/* the x for closing */
+.snitch span {
+  cursor: pointer;
+  display: inline-block;
+  padding: 0 .5em;
+  font-size: 2em;
+}
+
+/* the link for email */
+.snitch a {
+  color: white;
+  text-decoration: underline;
+}
