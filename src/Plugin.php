@@ -6,7 +6,7 @@ use Craft;
 use craft\events\ElementEvent;
 use craft\services\Elements;
 
-use marionnewlevant\snitch\assetbundles\Snitch\SnitchAsset;
+use marionnewlevant\snitch\assetbundles\snitch\SnitchAsset;
 use marionnewlevant\snitch\models\Settings;
 
 use yii\base\Event;
