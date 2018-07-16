@@ -14,6 +14,7 @@ When the close button on a warning is clicked, the warning class is changed, and
 var globalPollInterval = null;
 var globalMessage = null;
 var globalInputIdSelector = null;
+var snitchCollisionAjaxEnterLastRequest = null;
 
 var currentWarnings = function($warnContainer) {
   var $warnings = $warnContainer.children('div');
@@ -66,15 +67,18 @@ var lookForEditForms = function() {
         // our modal is gone.
         if (intervalId) { window.clearInterval(intervalId); }
       } else {
-        Craft.postActionRequest(
-          'snitch/collision/ajax-enter',
-          {elementId: elementId},
-          function(response) {
-            if (response['collisions'].length) {
-              warn(elementId, $warnContainer, response['collisions']);
+        if (!snitchCollisionAjaxEnterLastRequest
+          || (snitchCollisionAjaxEnterLastRequest && snitchCollisionAjaxEnterLastRequest.status)) {
+          snitchCollisionAjaxEnterLastRequest = Craft.postActionRequest(
+            'snitch/collision/ajax-enter',
+            {elementId: elementId},
+            function(response) {
+              if (response['collisions'].length) {
+                warn(elementId, $warnContainer, response['collisions']);
+              }
             }
-          }
-        );
+          );
+        }
       }
     };
 
