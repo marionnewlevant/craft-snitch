@@ -38,9 +38,22 @@ use craft\web\Controller;
 class CollisionController extends Controller
 {
 
+    public $allowAnonymous = ['ajax-enter', 'get-config'];
+
     public function actionAjaxEnter()
     {
         $this->requireAcceptsJson();
+
+        // require login (gracefully)
+        $userSession = Craft::$app->getUser();
+        if ($userSession->getIsGuest()) {
+            $json = $this->asJson([
+                'success' => false,
+                'error' => 'not logged in',
+            ]);
+            return $json;
+        }
+
         $elementId = (int)(Craft::$app->getRequest()->getBodyParam('elementId'));
         // expire any old collisions
         Snitch::$plugin->collision->expire();
@@ -52,6 +65,7 @@ class CollisionController extends Controller
         $userData = Snitch::$plugin->collision->userData($collisionModels);
         // and return
         $json = $this->asJson([
+            'success' => true,
             'collisions' => $userData,
         ]);
         return $json;

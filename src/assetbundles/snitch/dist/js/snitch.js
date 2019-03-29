@@ -72,8 +72,8 @@ var lookForEditForms = function() {
           snitchCollisionAjaxEnterLastRequest = Craft.postActionRequest(
             'snitch/collision/ajax-enter',
             {elementId: elementId},
-            function(response) {
-              if (response['collisions'].length) {
+            function(response, textStatus) {
+              if (textStatus == 'success' && response && response['collisions'].length) {
                 warn(elementId, $warnContainer, response['collisions']);
               }
             }
@@ -100,12 +100,14 @@ var doEverything = function() {
   Craft.postActionRequest(
       'snitch/collision/get-config',
       {},
-      function(response) {
-        globalPollInterval = response['serverPollInterval'] * 1000;
-        globalMessage = response['message'];
-        globalInputIdSelector = response['inputIdSelector'];
-        lookForEditForms();
-        window.setInterval(lookForEditForms, globalPollInterval);
+      function(response, textStatus) {
+        if (textStatus == 'success' && response) {
+          globalPollInterval = response['serverPollInterval'] * 1000;
+          globalMessage = response['message'];
+          globalInputIdSelector = response['inputIdSelector'];
+          lookForEditForms();
+          window.setInterval(lookForEditForms, globalPollInterval);
+        }
       }
   );
 };

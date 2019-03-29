@@ -1,7 +1,7 @@
 {
   "name": "marionnewlevant/snitch",
   "description": "Report when two people might be editing the same entry, category, or global",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "type": "craft-plugin",
   "keywords": [
     "craft", "craftcms", "craft-plugin", "snitch"

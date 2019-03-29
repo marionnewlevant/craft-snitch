@@ -6,9 +6,12 @@ Snitch watches entry, category, and global set editors, and lets you know when s
 
 To install Snitch, follow these steps:
 
-1. Download & unzip the file and place the `snitch` directory into your `craft/plugins` directory
-2.  -OR- install with Composer via `composer require marionnewlevant/snitch`
-3. Install plugin in the Craft Control Panel under Settings > Plugins
+1. Install with Composer via `composer require marionnewlevant/snitch` from your project directory
+2. Install plugin in the Craft Control Panel under Settings > Plugins
+
+or
+
+1. Install via the Plugin Store
 
 Snitch works on Craft 3.x.
 
@@ -35,6 +38,6 @@ The default configuration can be overridden with a config file in `craft/config/
 - `message`: text for the warning banner. The text `{user}` will be replace with a mailto link to the conflicting user. Default value: `May also be edited by: {user}.`
 - `inputIdSelector`: the css selector for identifying the hidden inputs which indicate an element edit window or modal element edit window.
 
-The visual look of the warning banners can be modifed with the `cpcss` plugin.
+The visual look of the warning banners can be modifed with the [cpcss](https://plugins.craftcms.com/cp-css) plugin.
 
 Brought to you by [Marion Newlevant](http://marion.newlevant.com)

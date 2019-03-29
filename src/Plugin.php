@@ -40,7 +40,7 @@ class Plugin extends \craft\base\Plugin
         $this->setComponents([
             'collision' => \marionnewlevant\snitch\services\Collision::class,
         ]);
-        if (Craft::$app->getRequest()->getIsCpRequest() && !Craft::$app->getRequest()->getIsAjax()) {
+        if (Craft::$app->getRequest()->getIsCpRequest() && !Craft::$app->getUser()->getIsGuest() && !Craft::$app->getRequest()->getIsAjax()) {
             // Register our asset bundle
             Craft::$app->getView()->registerAssetBundle(SnitchAsset::class);
             // on save, remove any collision for this element.
