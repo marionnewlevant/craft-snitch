@@ -28,6 +28,9 @@ var globalPollInterval = null;
 var globalMessage = null;
 var globalInputIdSelectors = null;
 
+// only one Craft.postActionRequest at a time (https://github.com/marionnewlevant/craft-snitch/issues/8)
+var g_lastActionRequest = null;
+
 var currentWarnings = function($warnContainer) {
   var $warnings = $warnContainer.children('div');
   var ret = {};
@@ -84,15 +87,17 @@ var lookForEditForms = function() {
             // our modal is gone.
             if (intervalId) { window.clearInterval(intervalId); }
           } else {
-            Craft.postActionRequest(
-              'snitch/collision/ajax-enter',
-              {snitchId: snitchId, snitchType: snitchType},
-              function(response, textStatus) {
-                if (textStatus == 'success' && response && response['collisions'].length) {
-                  warn(snitchId, $warnContainer, response['collisions']);
+            if (!g_lastActionRequest || g_lastActionRequest.status) {
+              g_lastActionRequest = Craft.postActionRequest(
+                'snitch/collision/ajax-enter',
+                {snitchId: snitchId, snitchType: snitchType},
+                function(response, textStatus) {
+                  if (textStatus == 'success' && response && response['collisions'].length) {
+                    warn(snitchId, $warnContainer, response['collisions']);
+                  }
                 }
-              }
-            );
+              );
+            }
           }
         };
 
