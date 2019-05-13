@@ -1,6 +1,6 @@
 # Snitch plugin for Craft CMS 3.x
 
-Snitch watches entry, category, and global set editors, and lets you know when someone else may also be editing the same thing at the same time.
+Snitch watches element editors (entry, category, global set, user, etc.) and field editors, and lets you know when someone else may also be editing the same thing at the same time.
 
 ## Installation
 
@@ -34,10 +34,32 @@ Clicking the `X` will dismiss the banner.
 
 The default configuration can be overridden with a config file in `craft/config/snitch.php`. This is a standard Craft config file, with the usual multienvironment support. The configurable values are:
 
-- `serverPollInterval`: interval (in seconds) for polling server to look for newly arrived conflicts. Default value: `2`
-- `message`: text for the warning banner. The text `{user}` will be replace with a mailto link to the conflicting user. Default value: `May also be edited by: {user}.`
-- `inputIdSelector`: the css selector for identifying the hidden inputs which indicate an element edit window or modal element edit window.
+- `serverPollInterval`: interval (in seconds) for polling server to look for newly arrived conflicts. Default value: `2`. Minimum value 1, maximum value 5.
+- `message`: text for the warning banner. The text `{user}` will be replaced with a mailto link to the conflicting user. Default value: `May also be edited by: {user}.`
+- `elementInputIdSelector`: the css selector for identifying the hidden inputs which indicate an element edit window or modal element edit window.
+- `fieldInputIdSelector`: css selector for identifying the hidden inputs which indicate a field edit window.
 
 The visual look of the warning banners can be modifed with the [cpcss](https://plugins.craftcms.com/cp-css) plugin.
+
+## How it works.
+
+Javascript (and css) is added to every backend page. That javascript fetches the configuration values, and then starts polling. Every 2 seconds, it looks for any edit forms on the page, and if it finds such a form, reports via ajax the type and the id of the element that the edit form is editing. In return, it is passed a list of possible collisions.
+
+On the server, a database table (snitch_collisions) records
+- the user
+- the type of the element being edited
+- the id of the element being edited
+- when the element was last reported being edited by this user.
+
+When the ajax call arrives reporting that an element is being edited, these things happen:
+
+1. Any report that has not been updated in 10 poll intervals is removed from the snitch_collisions table. It is no longer being edited.
+2. Either create a new report for this user/element type/element id, or update the time on the existing one
+3. Look for any edit reports of this element by other users.
+4. Return the user data from these reports. These will be other people who may be editing the element.
+
+## Issues
+
+Snitch will fail to notice when one person is editing a Commerce product, and another is editing a variant of that product through a modal.
 
 Brought to you by [Marion Newlevant](http://marion.newlevant.com)

@@ -1,23 +1,56 @@
 <?php
+/**
+ * Snitch plugin for Craft CMS 3.x
+ *
+ * Report when two people might be editing the same entry, category, or global
+ *
+ * @link      http://marion.newlevant.com
+ * @copyright Copyright (c) 2019 Marion Newlevant
+ */
 
 namespace marionnewlevant\snitch\services;
 
-use Craft;
-use craft\helpers\Db;
-use marionnewlevant\snitch\Plugin as Snitch;
+use marionnewlevant\snitch\Snitch;
 use marionnewlevant\snitch\models\SnitchModel;
 use marionnewlevant\snitch\records\SnitchRecord;
-use yii\base\Component;
 
+use Craft;
+use craft\base\Component;
+use craft\helpers\Db;
+
+/**
+ * Collision Service
+ *
+ * All of your plugin’s business logic should go in services, including saving data,
+ * retrieving data, etc. They provide APIs that your controllers, template variables,
+ * and other plugins can interact with.
+ *
+ * https://craftcms.com/docs/plugins/services
+ *
+ * @author    Marion Newlevant
+ * @package   Snitch
+ * @since     1.0.0
+ */
 class Collision extends Component
 {
-    public function remove(string $elementId, $userId = null)
+    // Public Methods
+    // =========================================================================
+
+    /**
+     * From any other plugin file, call it like this:
+     *
+     *     Snitch::$plugin->collision->remove()
+     *
+     * @return mixed
+     */
+    public function remove(int $snitchId, string $snitchType, $userId = null)
     {
         $userId = $this->_userId($userId);
         $transaction = Craft::$app->getDb()->beginTransaction();
         try {
             $record = SnitchRecord::findOne([
-                'elementId' => $elementId,
+                'snitchId' => $snitchId,
+                'snitchType' => $snitchType,
                 'userId' => $userId
             ]);
 
@@ -32,7 +65,8 @@ class Collision extends Component
         }
     }
 
-    public function register(string $elementId, $userId = null, \DateTime $now = null)
+
+    public function register(int $snitchId, string $snitchType, $userId = null, \DateTime $now = null)
     {
         $now = $this->_now($now);
         $userId = $this->_userId($userId);
@@ -40,13 +74,15 @@ class Collision extends Component
         try {
             // look for existing record to update
             $record = SnitchRecord::findOne([
-                'elementId' => $elementId,
+                'snitchId' => $snitchId,
+                'snitchType' => $snitchType,
                 'userId' => $userId
             ]);
 
             if (!$record) {
                 $record = new SnitchRecord();
-                $record->elementId = $elementId;
+                $record->snitchId = $snitchId;
+                $record->snitchType = $snitchType;
                 $record->userId = $userId;
             }
             $record->whenEntered = $now;
@@ -59,15 +95,20 @@ class Collision extends Component
         }
     }
 
-    public function getCollisions(string $elementId)
+    public function getCollisions(int $snitchId, string $snitchType, $userId = null)
     {
+        $userId = $this->_userId($userId);
         $result = [];
         $rows = SnitchRecord::findAll([
-            'elementId' => $elementId
+            'snitchId' => $snitchId,
+            'snitchType' => $snitchType,
         ]);
         foreach ($rows as $row)
         {
-            $result[] = new SnitchModel($row);
+            if ($row->userId !== $userId)
+            {
+                $result[] = new SnitchModel($row);
+            }
         }
         return $result;
     }
@@ -95,9 +136,8 @@ class Collision extends Component
         }
     }
 
-    public function userData(array $snitchModels, $userId = null)
+    public function userData(array $snitchModels)
     {
-        $userId = $this->_userId($userId);
         $result = [];
         $userIds = [];
         foreach ($snitchModels as $model)
@@ -108,16 +148,13 @@ class Collision extends Component
         
         foreach ($userIds as $id)
         {
-            if ($id !== $userId)
+            $user = Craft::$app->users->getUserById($id);
+            if ($user)
             {
-                $user = Craft::$app->users->getUserById($id);
-                if ($user)
-                {
-                    $result[] = [
-                        'name' => $user->getFriendlyName(),
-                        'email' => $user->email,
-                    ];
-                }
+                $result[] = [
+                    'name' => $user->getFriendlyName(),
+                    'email' => $user->email,
+                ];
             }
         }
         return $result;

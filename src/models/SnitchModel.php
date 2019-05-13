@@ -5,16 +5,16 @@
  * Report when two people might be editing the same entry, category, or global
  *
  * @link      http://marion.newlevant.com
- * @copyright Copyright (c) 2017 Marion Newlevant
+ * @copyright Copyright (c) 2019 Marion Newlevant
  */
 
 namespace marionnewlevant\snitch\models;
 
-use craft\validators\DateTimeValidator;
-use marionnewlevant\snitch\Plugin;
+use marionnewlevant\snitch\Snitch;
 
 use Craft;
 use craft\base\Model;
+use craft\validators\DateTimeValidator;
 
 /**
  * SnitchModel Model
@@ -40,7 +40,8 @@ class SnitchModel extends Model
      * @var string
      */
     public $id;
-    public $elementId;
+    public $snitchId;
+    public $snitchType;
     public $userId;
     public $whenEntered;
     public $dateCreated;
@@ -63,7 +64,7 @@ class SnitchModel extends Model
     public function rules()
     {
         return [
-            [['id', 'elementId', 'userId'], 'number', 'integerOnly' => true],
+            [['id', 'snitchId', 'userId'], 'number', 'integerOnly' => true],
             [['whenEntered', 'dateCreated', 'dateUpdated'], DateTimeValidator::class],
         ];
     }

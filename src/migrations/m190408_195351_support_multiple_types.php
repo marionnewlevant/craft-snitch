@@ -1,12 +1,22 @@
 <?php
+
 namespace marionnewlevant\snitch\migrations;
 
+use Craft;
 use craft\db\Migration;
 
-class Install extends Migration
+/**
+ * m190408_195351_support_multiple_types migration.
+ */
+class m190408_195351_support_multiple_types extends Migration
 {
+    /**
+     * @inheritdoc
+     */
     public function safeUp()
     {
+        $this->dropTableIfExists('{{%snitch_collisions}}');
+
         // create our table
         $this->createTable('{{%snitch_collisions}}', [
             'id' => $this->primaryKey(),
@@ -25,9 +35,11 @@ class Install extends Migration
             '{{%snitch_collisions}}', 'userId', '{{%users}}', 'id', 'CASCADE', null);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function safeDown()
     {
-        // remove the table on uninstall
         $this->dropTableIfExists('{{%snitch_collisions}}');
     }
 }

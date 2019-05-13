@@ -1,34 +1,44 @@
 {
-  "name": "marionnewlevant/snitch",
-  "description": "Report when two people might be editing the same entry, category, or global",
-  "version": "2.0.3",
-  "type": "craft-plugin",
-  "keywords": [
-    "craft", "craftcms", "craft-plugin", "snitch"
-  ],
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Marion Newlevant",
-      "homepage": "http://marion.newlevant.com"
+    "name": "marionnewlevant/snitch",
+    "description": "Report when two people might be editing the same element (eg entry, category, or global) or field",
+    "type": "craft-plugin",
+    "version": "2.1.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "snitch"
+    ],
+    "support": {
+        "docs": "https://github.com/marionnewlevant/craft-snitch/blob/v2/README.md",
+        "issues": "https://github.com/marionnewlevant/craft-snitch/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marion Newlevant",
+            "homepage": "http://marion.newlevant.com"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
+    },
+    "autoload": {
+        "psr-4": {
+            "marionnewlevant\\snitch\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Snitch",
+        "handle": "snitch",
+        "hasCpSettings": false,
+        "hasCpSection": false,
+        "documentationUrl": "https://github.com/marionnewlevant/craft-snitch/blob/v2/README.md",
+        "changelogUrl": "https://raw.githubusercontent.com/marionnewlevant/craft-snitch/v2/CHANGELOG.md",
+        "components": {
+            "collision": "marionnewlevant\\snitch\\services\\Collision"
+        },
+        "class": "marionnewlevant\\snitch\\Snitch"
     }
-  ],
-  "require": {
-    "craftcms/cms": "^3.0.0-RC1"
-  },
-  "autoload": {
-    "psr-4": {
-      "marionnewlevant\\snitch\\": "src/"
-    }
-  },
-  "extra": {
-    "name": "Snitch",
-    "handle": "snitch",
-    "version": "2.0.3",
-    "schemaVersion": "1.0.0",
-    "hasSettings": false,
-    "hasCpSection": false,
-    "documentationUrl": "https://github.com/marionnewlevant/craft-snitch/blob/v2/README.md",
-    "changelogUrl": "https://raw.githubusercontent.com/marionnewlevant/craft-snitch/v2/CHANGELOG.md"
-  }
 }

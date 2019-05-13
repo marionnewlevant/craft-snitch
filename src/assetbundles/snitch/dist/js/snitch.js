@@ -1,3 +1,14 @@
+ /**
+ * Snitch plugin for Craft CMS
+ *
+ * Snitch JS
+ *
+ * @author    Marion Newlevant
+ * @copyright Copyright (c) 2019 Marion Newlevant
+ * @link      http://marion.newlevant.com
+ * @package   Snitch
+ * @since     2.0.3
+ */
 /*
 This javascript file is injected on every back-end page. Here is what it does:
 1) Fetch the snitch config values, store them as globals
@@ -10,11 +21,12 @@ might have been made even if the conflicting editor is no longer editing.
 When the close button on a warning is clicked, the warning class is changed, and css will hide the warning.
  */
 
+$(function () { // for namespacing if nothing else...
+
 // unchanging values from the config file
 var globalPollInterval = null;
 var globalMessage = null;
-var globalInputIdSelector = null;
-var snitchCollisionAjaxEnterLastRequest = null;
+var globalInputIdSelectors = null;
 
 var currentWarnings = function($warnContainer) {
   var $warnings = $warnContainer.children('div');
@@ -52,47 +64,51 @@ $('body').on('click', '.snitch span', function() {
 
 var lookForEditForms = function() {
   // find all the hidden id input fields on the page (in main form and any modal forms)
-  var $idInputs = $(globalInputIdSelector);
+  var $idInputs;
+  var snitchType;
 
-  $idInputs.each(function() {
-    var $thisIdInput = $(this);
-    var elementId = $thisIdInput.val();
-    var $form = $thisIdInput.closest('form');
-    var isModal = $form.hasClass('body');
-    var snitchData = $form.data('snitch');
-    var intervalId = null;
-    var lookForConflicts = function() {
-      var $warnContainer = isModal ? $form.children('.snitch--modal') : $('.snitch--main');
-      if (isModal && !$form.closest('.hud.has-footer[style*="display: block;"]').length) {
-        // our modal is gone.
-        if (intervalId) { window.clearInterval(intervalId); }
-      } else {
-        if (!snitchCollisionAjaxEnterLastRequest
-          || (snitchCollisionAjaxEnterLastRequest && snitchCollisionAjaxEnterLastRequest.status)) {
-          snitchCollisionAjaxEnterLastRequest = Craft.postActionRequest(
-            'snitch/collision/ajax-enter',
-            {elementId: elementId},
-            function(response, textStatus) {
-              if (textStatus == 'success' && response && response['collisions'].length) {
-                warn(elementId, $warnContainer, response['collisions']);
+  for (snitchType in globalInputIdSelectors) {
+    if (globalInputIdSelectors.hasOwnProperty(snitchType) && globalInputIdSelectors[snitchType]) {
+      $idInputs = $(globalInputIdSelectors[snitchType]);
+
+      $idInputs.each(function() {
+        var $thisIdInput = $(this);
+        var snitchId = $thisIdInput.val();
+        var $form = $thisIdInput.closest('form');
+        var isModal = $form.hasClass('body');
+        var snitchData = $form.data('snitch');
+        var intervalId = null;
+        var lookForConflicts = function() {
+          var $warnContainer = isModal ? $form.children('.snitch--modal') : $('.snitch--main');
+          if (isModal && !$form.closest('.hud.has-footer[style*="display: block;"]').length) {
+            // our modal is gone.
+            if (intervalId) { window.clearInterval(intervalId); }
+          } else {
+            Craft.postActionRequest(
+              'snitch/collision/ajax-enter',
+              {snitchId: snitchId, snitchType: snitchType},
+              function(response, textStatus) {
+                if (textStatus == 'success' && response && response['collisions'].length) {
+                  warn(snitchId, $warnContainer, response['collisions']);
+                }
               }
-            }
-          );
-        }
-      }
-    };
+            );
+          }
+        };
 
-    if (!snitchData) {
-      if (isModal) {
-        $form.prepend('<div class="snitch snitch--modal"></div>');
-      } else {
-        $('body').prepend('<div class="snitch snitch--main"></div>');
-      }
-      $form.data('snitch', elementId);
-      lookForConflicts();
-      intervalId = window.setInterval(lookForConflicts, globalPollInterval);
+        if (!snitchData) {
+          if (isModal) {
+            $form.prepend('<div class="snitch snitch--modal"></div>');
+          } else {
+            $('body').prepend('<div class="snitch snitch--main"></div>');
+          }
+          $form.data('snitch', snitchId);
+          lookForConflicts();
+          intervalId = window.setInterval(lookForConflicts, globalPollInterval);
+        }
+      });
     }
-  });
+  }
 };
 
 // get our configuration, and once we have that, start polling for edit forms
@@ -104,7 +120,7 @@ var doEverything = function() {
         if (textStatus == 'success' && response) {
           globalPollInterval = response['serverPollInterval'] * 1000;
           globalMessage = response['message'];
-          globalInputIdSelector = response['inputIdSelector'];
+          globalInputIdSelectors = response['inputIdSelectors'];
           lookForEditForms();
           window.setInterval(lookForEditForms, globalPollInterval);
         }
@@ -113,3 +129,5 @@ var doEverything = function() {
 };
 
 doEverything();
+});
+

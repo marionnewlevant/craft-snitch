@@ -5,18 +5,18 @@
  * Report when two people might be editing the same entry, category, or global
  *
  * @link      http://marion.newlevant.com
- * @copyright Copyright (c) 2017 Marion Newlevant
+ * @copyright Copyright (c) 2019 Marion Newlevant
  */
 
 namespace marionnewlevant\snitch\controllers;
 
-use marionnewlevant\snitch\Plugin as Snitch;
+use marionnewlevant\snitch\Snitch;
 
 use Craft;
 use craft\web\Controller;
 
 /**
- * Default Controller
+ * Collision Controller
  *
  * Generally speaking, controllers are the middlemen between the front end of
  * the CP/website and your plugin’s services. They contain action methods which
@@ -38,8 +38,29 @@ use craft\web\Controller;
 class CollisionController extends Controller
 {
 
-    public $allowAnonymous = ['ajax-enter', 'get-config'];
+    // Protected Properties
+    // =========================================================================
 
+    /**
+     * @var    bool|array Allows anonymous access to this controller's actions.
+     *         The actions must be in 'kebab-case'
+     * @access protected
+     */
+//    protected $allowAnonymous = ['ajax-enter', 'get-config'];
+    protected $allowAnonymous = true;
+
+    // Public Methods
+    // =========================================================================
+
+    /**
+     * Handle a request going to our plugin's actionAjaxEnter URL,
+     * e.g.: actions/snitch/collision/ajax-enter
+     *
+     * Called from the javascript regularly (every 2 seconds)
+     * to report that the thing is indeed being edited.
+     *
+     * @return mixed
+     */
     public function actionAjaxEnter()
     {
         $this->requireAcceptsJson();
@@ -54,13 +75,14 @@ class CollisionController extends Controller
             return $json;
         }
 
-        $elementId = (int)(Craft::$app->getRequest()->getBodyParam('elementId'));
+        $snitchId = (int)(Craft::$app->getRequest()->getBodyParam('snitchId'));
+        $snitchType = Craft::$app->getRequest()->getBodyParam('snitchType');
         // expire any old collisions
         Snitch::$plugin->collision->expire();
         // record this person is editing this element
-        Snitch::$plugin->collision->register($elementId);
+        Snitch::$plugin->collision->register($snitchId, $snitchType);
         // get any collisions
-        $collisionModels = Snitch::$plugin->collision->getCollisions($elementId);
+        $collisionModels = Snitch::$plugin->collision->getCollisions($snitchId, $snitchType);
         // pull the user data out of our collisions
         $userData = Snitch::$plugin->collision->userData($collisionModels);
         // and return
@@ -71,14 +93,23 @@ class CollisionController extends Controller
         return $json;
     }
 
+    /**
+     * Handle a request going to our plugin's actionGetConfig URL,
+     * e.g.: actions/snitch/collision/get-config
+     *
+     * @return mixed
+     */
     public function actionGetConfig()
     {
         $this->requireAcceptsJson();
         $settings = Snitch::$plugin->getSettings();
+        $inputIdSelectors = [];
+        $inputIdSelectors['element'] = $settings['elementInputIdSelector'];
+        $inputIdSelectors['field'] = $settings['fieldInputIdSelector'];
         $json = $this->asJson([
             'message' => $settings['message'],
             'serverPollInterval' => $settings['serverPollInterval'],
-            'inputIdSelector' => $settings['inputIdSelector'],
+            'inputIdSelectors' => $inputIdSelectors,
         ]);
         return $json;
     }
