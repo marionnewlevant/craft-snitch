@@ -46,8 +46,7 @@ class CollisionController extends Controller
      *         The actions must be in 'kebab-case'
      * @access protected
      */
-//    protected $allowAnonymous = ['ajax-enter', 'get-config'];
-    protected $allowAnonymous = true;
+    protected $allowAnonymous = ['ajax-enter', 'get-config'];
 
     // Public Methods
     // =========================================================================
@@ -103,13 +102,11 @@ class CollisionController extends Controller
     {
         $this->requireAcceptsJson();
         $settings = Snitch::$plugin->getSettings();
-        $inputIdSelectors = [];
-        $inputIdSelectors['element'] = $settings['elementInputIdSelector'];
-        $inputIdSelectors['field'] = $settings['fieldInputIdSelector'];
         $json = $this->asJson([
             'message' => $settings['message'],
             'serverPollInterval' => $settings['serverPollInterval'],
-            'inputIdSelectors' => $inputIdSelectors,
+            'elementInputIdSelector' => $settings['elementInputIdSelector'],
+            'fieldInputIdSelector' => $settings['fieldInputIdSelector'],
         ]);
         return $json;
     }

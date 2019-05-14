@@ -26,10 +26,25 @@ $(function () { // for namespacing if nothing else...
 // unchanging values from the config file
 var globalPollInterval = null;
 var globalMessage = null;
-var globalInputIdSelectors = null;
+var globalElementInputIdSelector = null;
+var globalFieldInputIdSelector = null;
 
-// only one Craft.postActionRequest at a time (https://github.com/marionnewlevant/craft-snitch/issues/8)
-var g_lastActionRequest = null;
+// queue of collision searches https://www.i-programmer.info/programming/jquery/10443-jquery-3-function-queues.html
+// we have a queue of ajax calls here. The last element on the queue is a no-op, so we can
+// safely tell if the queue is empty by removing it (and if there was no last entry it was empty)
+// the function passed to addToQueue will have the necessary context bound to it explicitly. That
+// function does its thing, then adds a new iteration of itself to the queue, then waits, then
+// calls the next in the queue.
+var $g_postQueue = $({});
+
+var addToQueue = function(queueFunction) {
+  var state = $g_postQueue.queue('snitch').pop(); // either marker no-op, or queue is empty
+  $g_postQueue.queue('snitch', queueFunction); // add ours
+  $g_postQueue.queue('snitch', function(){}); // add back the no-op
+  if (state === undefined) {
+    $g_postQueue.dequeue('snitch'); // restart if queue was empty
+  }
+};
 
 var currentWarnings = function($warnContainer) {
   var $warnings = $warnContainer.children('div');
@@ -65,54 +80,71 @@ $('body').on('click', '.snitch span', function() {
   $div.addClass('snitch--hidden');
 });
 
-var lookForEditForms = function() {
-  // find all the hidden id input fields on the page (in main form and any modal forms)
-  var $idInputs;
-  var snitchType;
 
-  for (snitchType in globalInputIdSelectors) {
-    if (globalInputIdSelectors.hasOwnProperty(snitchType) && globalInputIdSelectors[snitchType]) {
-      $idInputs = $(globalInputIdSelectors[snitchType]);
-
-      $idInputs.each(function() {
-        var $thisIdInput = $(this);
-        var snitchId = $thisIdInput.val();
-        var $form = $thisIdInput.closest('form');
-        var isModal = $form.hasClass('body');
-        var snitchData = $form.data('snitch');
-        var intervalId = null;
-        var lookForConflicts = function() {
-          var $warnContainer = isModal ? $form.children('.snitch--modal') : $('.snitch--main');
-          if (isModal && !$form.closest('.hud.has-footer[style*="display: block;"]').length) {
-            // our modal is gone.
-            if (intervalId) { window.clearInterval(intervalId); }
-          } else {
-            if (!g_lastActionRequest || g_lastActionRequest.status) {
-              g_lastActionRequest = Craft.postActionRequest(
-                'snitch/collision/ajax-enter',
-                {snitchId: snitchId, snitchType: snitchType},
-                function(response, textStatus) {
-                  if (textStatus == 'success' && response && response['collisions'].length) {
-                    warn(snitchId, $warnContainer, response['collisions']);
-                  }
-                }
-              );
+// look for conflicts, then add ourselves to the queue, then wait, then dequeue
+var lookForConflicts = function(next) {
+  var myThis = this;
+  var $warnContainer = this.isModal ? this.$form.children('.snitch--modal') : $('.snitch--main');
+  if (this.isModal && !this.$form.closest('.hud.has-footer[style*="display: block;"]').length) {
+    // our modal is gone.
+    next();
+  } else {
+      Craft.postActionRequest(
+        'snitch/collision/ajax-enter',
+        {snitchId: this.snitchId, snitchType: this.snitchType},
+        function(response, textStatus) {
+          if (textStatus == 'success') {
+            if (response && response['collisions'].length) {
+              warn(myThis.snitchId, $warnContainer, response['collisions']);
             }
-          }
-        };
-
-        if (!snitchData) {
-          if (isModal) {
-            $form.prepend('<div class="snitch snitch--modal"></div>');
+            addToQueue(lookForConflicts.bind(myThis));
+            window.setTimeout(next, globalPollInterval);
           } else {
-            $('body').prepend('<div class="snitch snitch--main"></div>');
+            next(); // trouble with this call, don't try it again.
           }
-          $form.data('snitch', snitchId);
-          lookForConflicts();
-          intervalId = window.setInterval(lookForConflicts, globalPollInterval);
         }
-      });
+      );
     }
+};
+
+var lookForEditFormsByType = function(snitchType, selector) {
+  // find all the hidden id input fields on the page (in main form and any modal forms)
+  var $idInputs = $(selector);
+
+  $idInputs.each(function() {
+    var $thisIdInput = $(this);
+    var snitchId = $thisIdInput.val();
+    var $form = $thisIdInput.closest('form');
+    var isModal = $form.hasClass('body');
+    var snitchData = $form.data('snitch');
+
+    if (!snitchData) {
+      // start looking for conflicts for this thing. Add the div for results,
+      // look once, and arrange to poll
+      if (isModal) {
+        $form.prepend('<div class="snitch snitch--modal"></div>');
+      } else {
+        $('body').prepend('<div class="snitch snitch--main"></div>');
+      }
+      $form.data('snitch', snitchId);
+
+      // push our bound lookForConflicts on the queue, which will start queue if needed
+      addToQueue(lookForConflicts.bind({
+        $form: $form,
+        snitchId: snitchId,
+        snitchType: snitchType,
+        isModal: isModal
+      }));
+    }
+  });
+};
+
+var lookForEditForms = function() {
+  if (globalElementInputIdSelector) {
+    lookForEditFormsByType('element', globalElementInputIdSelector);
+  }
+  if (globalFieldInputIdSelector) {
+    lookForEditFormsByType('field', globalFieldInputIdSelector);
   }
 };
 
@@ -125,7 +157,8 @@ var doEverything = function() {
         if (textStatus == 'success' && response) {
           globalPollInterval = response['serverPollInterval'] * 1000;
           globalMessage = response['message'];
-          globalInputIdSelectors = response['inputIdSelectors'];
+          globalElementInputIdSelector = response['elementInputIdSelector'];
+          globalFieldInputIdSelector = response['fieldInputIdSelector'];
           lookForEditForms();
           window.setInterval(lookForEditForms, globalPollInterval);
         }
