@@ -55,11 +55,11 @@ class SnitchAsset extends AssetBundle
         // define the relative path to CSS/JS files that should be registered with the page
         // when this asset bundle is registered
         $this->js = [
-            'js/Snitch.js',
+            'js/snitch.js',
         ];
 
         $this->css = [
-            'css/Snitch.css',
+            'css/snitch.css',
         ];
 
         parent::init();
