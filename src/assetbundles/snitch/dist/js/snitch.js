@@ -58,7 +58,6 @@ var currentWarnings = function($warnContainer) {
 };
 
 var warn = function(elementId, $warnContainer, collisions) {
-  var msg = globalMessage.split('{user}');
   // get the old warnings
   var oldWarnings = currentWarnings($warnContainer);
 
@@ -68,7 +67,7 @@ var warn = function(elementId, $warnContainer, collisions) {
     // if in old warnings already, ignore
     if (!oldWarnings[email]) {
       // otherwise add to container
-      $warnContainer.append('<div data-email="'+email+'"><div>'+msg[0]+'<a href="mailto:'+email+'">'+collisions[i].name+'</a>'+msg[1]+' <span>&times;</span></div></div>');
+      $warnContainer.append('<div data-email="'+email+'"><div>'+collisions[i].message+' <span>&times;</span></div></div>');
     }
   }
 };
@@ -91,7 +90,11 @@ var lookForConflicts = function(next) {
   } else {
       Craft.postActionRequest(
         'snitch/collision/ajax-enter',
-        {snitchId: this.snitchId, snitchType: this.snitchType},
+        {
+          snitchId: this.snitchId,
+          snitchType: this.snitchType,
+          messageTemplate: globalMessage
+        },
         function(response, textStatus) {
           if (textStatus == 'success') {
             if (response && response['collisions'].length) {
@@ -156,7 +159,7 @@ var doEverything = function() {
       function(response, textStatus) {
         if (textStatus == 'success' && response) {
           globalPollInterval = response['serverPollInterval'] * 1000;
-          globalMessage = response['message'];
+          globalMessage = response['messageTemplate'];
           globalElementInputIdSelector = response['elementInputIdSelector'];
           globalFieldInputIdSelector = response['fieldInputIdSelector'];
           lookForEditForms();

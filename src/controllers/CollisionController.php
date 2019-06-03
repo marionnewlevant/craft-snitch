@@ -76,18 +76,20 @@ class CollisionController extends Controller
 
         $snitchId = (int)(Craft::$app->getRequest()->getBodyParam('snitchId'));
         $snitchType = Craft::$app->getRequest()->getBodyParam('snitchType');
+        $messageTemplate = Craft::$app->getRequest()->getBodyParam('messageTemplate');
         // expire any old collisions
         Snitch::$plugin->collision->expire();
         // record this person is editing this element
         Snitch::$plugin->collision->register($snitchId, $snitchType);
         // get any collisions
         $collisionModels = Snitch::$plugin->collision->getCollisions($snitchId, $snitchType);
-        // pull the user data out of our collisions
-        $userData = Snitch::$plugin->collision->userData($collisionModels);
+        // pull the users out of our collisions
+        $collidingUsers = Snitch::$plugin->collision->collidingUsers($collisionModels);
+        $collisionMessages = Snitch::$plugin->collision->collisionMessages($collidingUsers, $messageTemplate);
         // and return
         $json = $this->asJson([
             'success' => true,
-            'collisions' => $userData,
+            'collisions' => $collisionMessages,
         ]);
         return $json;
     }
@@ -103,7 +105,7 @@ class CollisionController extends Controller
         $this->requireAcceptsJson();
         $settings = Snitch::$plugin->getSettings();
         $json = $this->asJson([
-            'message' => $settings['message'],
+            'messageTemplate' => $settings['messageTemplate'],
             'serverPollInterval' => $settings['serverPollInterval'],
             'elementInputIdSelector' => $settings['elementInputIdSelector'],
             'fieldInputIdSelector' => $settings['fieldInputIdSelector'],

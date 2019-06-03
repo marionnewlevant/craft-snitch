@@ -35,7 +35,7 @@ Clicking the `X` will dismiss the banner.
 The default configuration can be overridden with a config file in `craft/config/snitch.php`. This is a standard Craft config file, with the usual multienvironment support. The configurable values are:
 
 - `serverPollInterval`: interval (in seconds) for polling server to look for newly arrived conflicts. Default value: `2`. Minimum value 1, maximum value 5.
-- `message`: text for the warning banner. The text `{user}` will be replaced with a mailto link to the conflicting user. Default value: `May also be edited by: {user}.`
+- `messageTemplate`: text for the warning banner. This is parsed as twig, with `user` the user who may be in conflict. Default value is: `May also be edited by: <a href="mailto:{{user.email}}">{{user.username}}</a>.`. This will generate a `mailto` link to the user. You can change this to enable Slack messaging, or what-have-you.
 - `elementInputIdSelector`: the css selector for identifying the hidden inputs which indicate an element edit window or modal element edit window.
 - `fieldInputIdSelector`: css selector for identifying the hidden inputs which indicate a field edit window.
 

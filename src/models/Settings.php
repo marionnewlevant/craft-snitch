@@ -37,7 +37,7 @@ class Settings extends Model
 
 
     const SERVERPOLLINTERVAL = 2;
-    const MESSAGE = 'May also be edited by: {user}.';
+    const MESSAGE = 'May also be edited by: <a href="mailto:{{user.email}}">{{user.username}}</a>.';
     const ELEMENT_INPUTIDSELECTOR = 'form input[type="hidden"][name="entryId"]' // entry forms
         .', form input[type="hidden"][name="elementId"]' // modals entry forms
         .', form input[type="hidden"][name="setId"]' // global set
@@ -56,7 +56,7 @@ class Settings extends Model
     /**
      * @var string
      */
-    public $message = self::MESSAGE;
+    public $messageTemplate = self::MESSAGE;
 
     /**
      * @var string
@@ -88,8 +88,8 @@ class Settings extends Model
         $myRules = [
             ['serverPollInterval', 'integer', 'min' => 1, 'max' => 5],
             ['serverPollInterval', 'default', 'value' => self::SERVERPOLLINTERVAL],
-            ['message', 'string'],
-            ['message', 'default', 'value' => self::MESSAGE],
+            ['messageTemplate', 'string'],
+            ['messageTemplate', 'default', 'value' => self::MESSAGE],
             ['elementInputIdSelector', 'string'],
             ['fieldInputIdSelector', 'string'],
         ];

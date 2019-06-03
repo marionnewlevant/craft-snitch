@@ -17,6 +17,7 @@ use marionnewlevant\snitch\records\SnitchRecord;
 use Craft;
 use craft\base\Component;
 use craft\helpers\Db;
+use craft\web\View;
 
 /**
  * Collision Service
@@ -136,7 +137,7 @@ class Collision extends Component
         }
     }
 
-    public function userData(array $snitchModels)
+    public function collidingUsers(array $snitchModels)
     {
         $result = [];
         $userIds = [];
@@ -151,12 +152,30 @@ class Collision extends Component
             $user = Craft::$app->users->getUserById($id);
             if ($user)
             {
-                $result[] = [
-                    'name' => $user->getFriendlyName(),
-                    'email' => $user->email,
-                ];
+                $result[] = $user;
             }
         }
+        return $result;
+    }
+
+    public function collisionMessages(array $collidingUsers, string $messageTemplate)
+    {
+        $result = [];
+
+        // save cp template path and set to site templates
+        $oldMode = Craft::$app->view->getTemplateMode();
+        Craft::$app->view->setTemplateMode(View::TEMPLATE_MODE_SITE);
+        foreach ($collidingUsers as $user)
+        {
+            $message = Craft::$app->view->renderString($messageTemplate, ['user' => $user]);
+            $result[] = [
+                'email' => $user->email,
+                'message' => $message,
+            ];
+        }
+        // restore cp template paths
+        Craft::$app->view->setTemplateMode($oldMode);
+
         return $result;
     }
 

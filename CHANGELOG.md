@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.0.0 - 2019.06.02
+### Added
+- Config `messageTemplate` for the warning message. This is parsed as twig. Default value `'May also be edited by: <a href="mailto:{{user.email}}">{{user.username}}</a>.'`
+- `collidingUsers()` service and `collisionMessages()` service
+
+### Removed
+- Config `message`. Use the new, more flexible `messageTemplate`
+- `userData()` service
+
 ## 2.1.2 - 2019.05.15
 ### Fixed
 - Fixed case issue with Snitch.js vs snitch.js (and css)

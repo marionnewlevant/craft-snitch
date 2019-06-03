@@ -23,7 +23,7 @@
 
 return [
     'serverPollInterval' => 2, // interval for polling server (in seconds)
-    'message' => 'May also be edited by: {user}.', // warning message
+    'messageTemplate' => 'May also be edited by: <a href="mailto:{{user.email}}">{{user.username}}</a>.', // warning message
     // These are the selectors for the hidden input
     // fields with the id of whatever we are editing.
     // These selectors need to be this specific - [name$="Id"] would pick up
