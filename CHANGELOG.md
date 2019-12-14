@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.0.1 - 2019.12.13
+### Fixed
+- Issue with calling `$user->getIsGuest()` from plugin `init` (before app is fully bootstrapped)
+
 ## 3.0.0 - 2019.06.02
 ### Added
 - Config `messageTemplate` for the warning message. This is parsed as twig. Default value `'May also be edited by: <a href="mailto:{{user.email}}">{{user.username}}</a>.'`
