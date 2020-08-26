@@ -38,7 +38,7 @@ class Settings extends Model
 
     const SERVERPOLLINTERVAL = 2;
     const MESSAGE = 'May also be edited by: <a href="mailto:{{user.email}}">{{user.username}}</a>.';
-    const ELEMENT_INPUTIDSELECTOR = 'form input[type="hidden"][name="entryId"]' // entry forms
+    const ELEMENT_INPUTIDSELECTOR = 'form input[type="hidden"][name="sourceId"]' // entry forms
         .', form input[type="hidden"][name="elementId"]' // modals entry forms
         .', form input[type="hidden"][name="setId"]' // global set
         .', form input[type="hidden"][name="categoryId"]' // category
