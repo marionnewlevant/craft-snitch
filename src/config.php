@@ -27,11 +27,11 @@ return [
     // These are the selectors for the hidden input
     // fields with the id of whatever we are editing.
     // These selectors need to be this specific - [name$="Id"] would pick up
-    // both the entryId and the sectionId on an entry form, and we want only entryId.
+    // both the sourceId and the sectionId on an entry form, and we want only sourceId.
     // Snitch looks for simultaneous editing of
     // elements and fields
     'elementInputIdSelector' =>
-       'form input[type="hidden"][name="entryId"]' // entry forms
+       'form input[type="hidden"][name="sourceId"]' // entry forms
         .', form input[type="hidden"][name="elementId"]' // modals entry forms
         .', form input[type="hidden"][name="setId"]' // global set
         .', form input[type="hidden"][name="categoryId"]' // category

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## 3.0.1 - 2019.12.13
 ### Fixed
+- Craft 3.5 fix - field name change from `entryId` to `sourceId`
+
+## 3.0.2 - 2020.08.25
+### Fixed
 - Issue with calling `$user->getIsGuest()` from plugin `init` (before app is fully bootstrapped)
 
 ## 3.0.0 - 2019.06.02
