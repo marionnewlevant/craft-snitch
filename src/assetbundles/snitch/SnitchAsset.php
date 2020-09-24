@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2019 Marion Newlevant
  */
 
-namespace marionnewlevant\snitch\assetbundles\Snitch;
+namespace marionnewlevant\snitch\assetbundles\snitch;
 
 use Craft;
 use craft\web\AssetBundle;
