@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.0.3 - 2020.09.24
+### Fixed
+- Fix casing on snitch namespace in assetbundles
+
 ## 3.0.2 - 2020.08.25
 ### Fixed
 - Craft 3.5 fix - field name change from `entryId` to `sourceId`
