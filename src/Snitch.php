@@ -19,8 +19,6 @@ use Craft;
 use craft\base\Plugin;
 use yii\base\Event;
 
-use born05\twofactorauthentication\Plugin as TwoFactorAuth;
-
 
 /**
  * Craft plugins are very much like little applications in and of themselves. We’ve made
@@ -101,9 +99,9 @@ class Snitch extends Plugin
             Event::on(Plugins::class, Plugins::EVENT_AFTER_LOAD_PLUGINS, function () {
                 $user = Craft::$app->getUser();
                 // TwoFactorAuth - either not there, or not turned on for this user, or we have passed that hurdle
-                if (!TwoFactorAuth::$plugin
-                    || !TwoFactorAuth::$plugin->verify->isEnabled($user->getIdentity())
-                    || TwoFactorAuth::$plugin->verify->isVerified($user->getIdentity())
+                if (!Craft::$app->plugins->isPluginInstalled('two-factor-authentication')
+                    || !\born05\twofactorauthentication\Plugin::$plugin->verify->isEnabled($user->getIdentity())
+                    || \born05\twofactorauthentication\Plugin::$plugin->verify->isVerified($user->getIdentity())
                 )
                 {
                     // Register our asset bundle
