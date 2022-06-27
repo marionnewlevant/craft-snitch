@@ -1,6 +1,6 @@
 <?php
 /**
- * Snitch plugin for Craft CMS 3.x
+ * Snitch plugin for Craft CMS
  *
  * Report when two people might be editing the same entry, category, or global
  *

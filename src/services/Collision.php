@@ -1,6 +1,6 @@
 <?php
 /**
- * Snitch plugin for Craft CMS 3.x
+ * Snitch plugin for Craft CMS
  *
  * Report when two people might be editing the same entry, category, or global
  *
@@ -10,6 +10,9 @@
 
 namespace marionnewlevant\snitch\services;
 
+use DateInterval;
+use DateTime;
+use Exception;
 use marionnewlevant\snitch\Snitch;
 use marionnewlevant\snitch\models\SnitchModel;
 use marionnewlevant\snitch\records\SnitchRecord;
@@ -42,9 +45,14 @@ class Collision extends Component
      *
      *     Snitch::$plugin->collision->remove()
      *
-     * @return mixed
+     * @param int $snitchId
+     * @param string $snitchType
+     * @param null $userId
+     *
+     * @throws \yii\db\Exception
+     * @throws \yii\db\StaleObjectException
      */
-    public function remove(int $snitchId, string $snitchType, $userId = null)
+    public function remove(int $snitchId, string $snitchType, $userId = null): void
     {
         $userId = $this->_userId($userId);
         $transaction = Craft::$app->getDb()->beginTransaction();
@@ -55,19 +63,17 @@ class Collision extends Component
                 'userId' => $userId
             ]);
 
-            if ($record) {
-                $record->delete();
-            }
+            $record?->delete();
 
             $transaction->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             throw $e;
         }
     }
 
 
-    public function register(int $snitchId, string $snitchType, $userId = null, \DateTime $now = null)
+    public function register(int $snitchId, string $snitchType, $userId = null, DateTime $now = null)
     {
         $now = $this->_now($now);
         $userId = $this->_userId($userId);
@@ -90,13 +96,13 @@ class Collision extends Component
             $record->save();
 
             $transaction->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             throw $e;
         }
     }
 
-    public function getCollisions(int $snitchId, string $snitchType, $userId = null)
+    public function getCollisions(int $snitchId, string $snitchType, $userId = null): array
     {
         $userId = $this->_userId($userId);
         $result = [];
@@ -108,18 +114,18 @@ class Collision extends Component
         {
             if ($row->userId !== $userId)
             {
-                $result[] = new SnitchModel($row);
+                $result[] = new SnitchModel($row->toArray());
             }
         }
         return $result;
     }
 
-    public function expire(\DateTime $now = null)
+    public function expire(DateTime $now = null)
     {
         $now = $this->_now($now);
         $timeOut = $this->_serverPollInterval() * 10;
         $old = clone $now;
-        $old->sub(new \DateInterval('PT'.$timeOut.'S'));
+        $old->sub(new DateInterval('PT'.$timeOut.'S'));
         $transaction = Craft::$app->getDb()->beginTransaction();
         try {
             $allExpired = SnitchRecord::find()
@@ -131,13 +137,13 @@ class Collision extends Component
             }
 
             $transaction->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             throw $e;
         }
     }
 
-    public function collidingUsers(array $snitchModels)
+    public function collidingUsers(array $snitchModels): array
     {
         $result = [];
         $userIds = [];
@@ -158,7 +164,7 @@ class Collision extends Component
         return $result;
     }
 
-    public function collisionMessages(array $collidingUsers, string $messageTemplate)
+    public function collisionMessages(array $collidingUsers, string $messageTemplate): array
     {
         $result = [];
 
@@ -180,7 +186,7 @@ class Collision extends Component
     }
 
     // ============== default values =============
-    private function _userId($userId)
+    private function _userId($userId): int
     {
         if (!$userId) {
             $currentUser = Craft::$app->getUser()->getIdentity();
@@ -191,9 +197,9 @@ class Collision extends Component
         return (int)($userId);
     }
 
-    private function _now(\DateTime $now = null)
+    private function _now(DateTime $now = null): DateTime
     {
-        return ($now ? $now : new \DateTime());
+        return ($now ?: new DateTime());
     }
 
     private function _serverPollInterval()

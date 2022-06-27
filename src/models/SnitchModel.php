@@ -1,6 +1,6 @@
 <?php
 /**
- * Snitch plugin for Craft CMS 3.x
+ * Snitch plugin for Craft CMS
  *
  * Report when two people might be editing the same entry, category, or global
  *
@@ -10,11 +10,9 @@
 
 namespace marionnewlevant\snitch\models;
 
-use marionnewlevant\snitch\Snitch;
-
-use Craft;
 use craft\base\Model;
 use craft\validators\DateTimeValidator;
+use DateTime;
 
 /**
  * SnitchModel Model
@@ -36,17 +34,15 @@ class SnitchModel extends Model
     /**
      * Model attributes. These match the fields in snitch_collisions, as defined
      * in migrations/Install
-     *
-     * @var string
      */
-    public $id;
-    public $snitchId;
-    public $snitchType;
-    public $userId;
-    public $whenEntered;
-    public $dateCreated;
-    public $dateUpdated;
-    public $uid;
+    public int $id;
+    public int $snitchId;
+    public ?string $snitchType;
+    public int $userId;
+    public DateTime $whenEntered;
+    public DateTime $dateCreated;
+    public DateTime $dateUpdated;
+    public string $uid;
 
     // Public Methods
     // =========================================================================
@@ -61,7 +57,7 @@ class SnitchModel extends Model
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['id', 'snitchId', 'userId'], 'number', 'integerOnly' => true],

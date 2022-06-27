@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Added
+- Craft CMS 4 compatibility
+
+### Changed
+- Requires Craft CMS >= 4.0
+
 ## 3.0.4.1 - 2020.12.24
 ### Fixed
 - Snitch should again work without Two Factor Authentication

@@ -84,7 +84,7 @@ $('body').on('click', '.snitch span', function() {
 var lookForConflicts = function(next) {
   var myThis = this;
   var $warnContainer = this.isModal ? this.$form.children('.snitch--modal') : $('.snitch--main');
-  if (this.isModal && !this.$form.closest('.hud.has-footer[style*="display: block;"]').length) {
+  if (this.isModal && !this.$form.closest('.slideout-container:not(.hidden)').length) {
     // our modal is gone.
     next();
   } else {
@@ -118,7 +118,7 @@ var lookForEditFormsByType = function(snitchType, selector) {
     var $thisIdInput = $(this);
     var snitchId = $thisIdInput.val();
     var $form = $thisIdInput.closest('form');
-    var isModal = $form.hasClass('body');
+    var isModal = $form.hasClass('slideout');
     var snitchData = $form.data('snitch');
 
     if (!snitchData) {
