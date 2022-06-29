@@ -1,6 +1,6 @@
 <?php
 /**
- * Snitch plugin for Craft CMS 3.x
+ * Snitch plugin for Craft CMS
  *
  * Report when two people might be editing the same entry, category, or global
  *
@@ -47,9 +47,9 @@ class Snitch extends Plugin
      * Static property that is an instance of this plugin class so that it can be accessed via
      * Snitch::$plugin
      *
-     * @var Snitch
+     * @var Snitch|null
      */
-    public static $plugin;
+    public static ?Snitch $plugin;
 
     // Public Properties
     // =========================================================================
@@ -59,7 +59,7 @@ class Snitch extends Plugin
      *
      * @var string
      */
-     public $schemaVersion = '2.1.0';
+     public string $schemaVersion = '2.1.0';
 
     // Public Methods
     // =========================================================================
@@ -81,7 +81,6 @@ class Snitch extends Plugin
         self::$plugin = $this;
 
         $request = Craft::$app->getRequest();
-        $response = Craft::$app->getResponse();
 
         if (!$this->isInstalled || $request->getIsConsoleRequest()) {
             return;
@@ -133,9 +132,9 @@ class Snitch extends Plugin
     /**
      * Creates and returns the model used to store the plugin’s settings.
      *
-     * @return \craft\base\Model|null
+     * @return Settings
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): Settings
     {
         return new Settings();
     }

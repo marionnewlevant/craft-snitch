@@ -37,14 +37,22 @@ body.rtl .snitch {
   background-color: #bf5035;
   background-image: linear-gradient(#bf5035, #b34b3b);
   color: white;
-  /* we are going to close them by animating max-height */
   max-height: 3em;
+}
+
+.snitch--main>div {
+  /* we are going to close them by animating max-height */
   transition: max-height .5s;
   overflow: hidden;
 }
 
 .snitch > div.snitch--hidden {
   max-height: 0;
+}
+
+.snitch--modal>div.snitch--hidden {
+  padding: 0;
+  margin: 0;
 }
 
 /* the x for closing */
@@ -59,4 +67,14 @@ body.rtl .snitch {
 .snitch a {
   color: white;
   text-decoration: underline;
+}
+
+/* the style for the new slideouts */
+.snitch--modal>div {
+  margin: calc(var(--xl)*-1) var(--neg-padding) var(--xl);
+  padding: var(--s) var(--xl);
+}
+
+.snitch--modal span {
+  padding: 0 0 0 .5em;
 }

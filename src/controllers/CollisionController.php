@@ -1,6 +1,6 @@
 <?php
 /**
- * Snitch plugin for Craft CMS 3.x
+ * Snitch plugin for Craft CMS
  *
  * Report when two people might be editing the same entry, category, or global
  *
@@ -14,6 +14,7 @@ use marionnewlevant\snitch\Snitch;
 
 use Craft;
 use craft\web\Controller;
+use yii\web\Response;
 
 /**
  * Collision Controller
@@ -42,11 +43,11 @@ class CollisionController extends Controller
     // =========================================================================
 
     /**
-     * @var    bool|array Allows anonymous access to this controller's actions.
+     * @var    int|bool|array Allows anonymous access to this controller's actions.
      *         The actions must be in 'kebab-case'
      * @access protected
      */
-    protected $allowAnonymous = ['ajax-enter', 'get-config'];
+    protected int|bool|array $allowAnonymous = ['ajax-enter', 'get-config'];
 
     // Public Methods
     // =========================================================================
@@ -58,20 +59,20 @@ class CollisionController extends Controller
      * Called from the javascript regularly (every 2 seconds)
      * to report that the thing is indeed being edited.
      *
-     * @return mixed
+     * @return \yii\web\Response
+     * @throws \yii\web\BadRequestHttpException
      */
-    public function actionAjaxEnter()
+    public function actionAjaxEnter(): Response
     {
         $this->requireAcceptsJson();
 
         // require login (gracefully)
         $userSession = Craft::$app->getUser();
         if ($userSession->getIsGuest()) {
-            $json = $this->asJson([
+            return $this->asJson([
                 'success' => false,
                 'error' => 'not logged in',
             ]);
-            return $json;
         }
 
         $snitchId = (int)(Craft::$app->getRequest()->getBodyParam('snitchId'));
@@ -87,29 +88,28 @@ class CollisionController extends Controller
         $collidingUsers = Snitch::$plugin->collision->collidingUsers($collisionModels);
         $collisionMessages = Snitch::$plugin->collision->collisionMessages($collidingUsers, $messageTemplate);
         // and return
-        $json = $this->asJson([
+        return $this->asJson([
             'success' => true,
             'collisions' => $collisionMessages,
         ]);
-        return $json;
     }
 
     /**
      * Handle a request going to our plugin's actionGetConfig URL,
      * e.g.: actions/snitch/collision/get-config
      *
-     * @return mixed
+     * @return \yii\web\Response
+     * @throws \yii\web\BadRequestHttpException
      */
-    public function actionGetConfig()
+    public function actionGetConfig(): Response
     {
         $this->requireAcceptsJson();
         $settings = Snitch::$plugin->getSettings();
-        $json = $this->asJson([
+        return $this->asJson([
             'messageTemplate' => $settings['messageTemplate'],
             'serverPollInterval' => $settings['serverPollInterval'],
             'elementInputIdSelector' => $settings['elementInputIdSelector'],
             'fieldInputIdSelector' => $settings['fieldInputIdSelector'],
         ]);
-        return $json;
     }
 }
